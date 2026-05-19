@@ -1,0 +1,27 @@
+name: Build NAS Upload Tool
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '6.0.x'
+
+    - name: Build EXE
+      run: |
+        dotnet build Nas拖拽直传工具.csproj -c Release
+        dotnet publish Nas拖拽直传工具.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:DebugType=None
+
+    - name: Upload EXE
+      uses: actions/upload-artifact@v4
+      with:
+        name: 拖拽直传工具
+        path: bin/Release/**/publish/*.exe
